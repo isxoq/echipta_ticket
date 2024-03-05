@@ -55,78 +55,71 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from "vue";
 import stadiumSvgHtml from "@/assets/images/stadium.svg";
 
-export default {
-  // Component logic
+const sectorTitle = ref(null);
+const svgContent = ref(null);
+const isLoading = ref(false);
 
-  data() {
-    return {
-      sectorTitle: null,
-      svgContent: null,
-      isLoading: false,
-    };
-  },
-  mounted() {
-    this.loadSVG(stadiumSvgHtml);
-  },
-  methods: {
-    loadSVG(svgData) {
-      this.isLoading = true;
-      self = this;
-      fetch(svgData)
-        .then((response) => response.text())
-        .then((svgText) => {
-          this.svgContent = svgText;
-          // console.log(svgText)
-        })
-        .catch((error) => {
-          console.error("Error loading SVG:", error);
-        })
-        .finally(function () {
-          self.isLoading = false;
-        });
-    },
-    async handleSVGClick(event) {
-      // Handle SVG click events
+function loadSVG(svgData) {
+  isLoading.value = true;
+  fetch(svgData)
+    .then((response) => response.text())
+    .then((svgText) => {
+      svgContent.value = svgText;
+      // console.log(svgText)
+    })
+    .catch((error) => {
+      console.error("Error loading SVG:", error);
+    })
+    .finally(function () {
+      isLoading.value = false;
+    });
+}
 
-      let eventID = event.target.id;
+async function handleSVGClick(event) {
+  // Handle SVG click events
 
-      if (eventID.includes("sector-")) {
-        let sectorID = eventID.replace("sector-", "");
-        this.sectorTitle = sectorID;
-        if (sectorID === "1a" || sectorID === "1b" || sectorID === "vip") {
-          console.log(sectorID);
-        } else {
-          console.log(sectorID);
+  let eventID = event.target.id;
 
-          this.isLoading = true;
+  if (eventID.includes("sector-")) {
+    let sectorID = eventID.replace("sector-", "");
+    sectorTitle.value = sectorID;
+    if (sectorID === "1a" || sectorID === "1b" || sectorID === "vip") {
+      console.log(sectorID);
+    } else {
+      console.log(sectorID);
 
-          try {
-            const { default: sectorData } = await import(
-              `@/assets/images/sectors/sector-${sectorID}.svg`
-            );
-            this.loadSVG(sectorData);
-          } catch (error) {
-            this.isLoading = false;
-            console.error("Error loading SVG:", error);
-          }
-        }
-      } else {
-        // Extract the id attribute value of the clicked element
-        let seatID = event.target.closest("g").getAttribute("id");
-        // Do something with the id value
-        if (seatID && seatID.includes("seat")) {
-          alert("Tanlangam: " + seatID);
-        }
+      isLoading.value = true;
+
+      try {
+        const { default: sectorData } = await import(
+          `@/assets/images/sectors/sector-${sectorID}.svg`
+        );
+        loadSVG(sectorData);
+      } catch (error) {
+        isLoading.value = false;
+        console.error("Error loading SVG:", error);
       }
-    },
+    }
+  } else {
+    // Extract the id attribute value of the clicked element
+    let seatID = event.target.closest("g").getAttribute("id");
+    // Do something with the id value
+    if (seatID && seatID.includes("seat")) {
+      alert("Tanlangam: " + seatID);
+    }
+  }
+}
 
-    back() {
-      this.sectorTitle = null;
-      this.loadSVG(stadiumSvgHtml);
-    },
-  },
-};
+function back() {
+  sectorTitle.value = null;
+  loadSVG(stadiumSvgHtml);
+}
+
+onMounted(() => {
+  loadSVG(stadiumSvgHtml);
+});
 </script>
