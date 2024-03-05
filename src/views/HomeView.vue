@@ -5,20 +5,35 @@
       <div class="loading-text">Yuklanmoqda...</div>
     </div>
 
-    <div class="navigation-header" v-if="sectorTitle">
-      <button class="back-button" @click="back">Orqaga</button>
-      <div>Sektor: {{ sectorTitle }}</div>
-    </div>
-
     <!-- Your content goes here -->
     <div class="main-content">
-      <div class="main-content__title">Bobur Arena</div>
+      <div class="main-content__title">
+        <button class="back-button" v-if="sectorTitle" @click="back">
+          Orqaga
+        </button>
+
+        {{ sectorTitle ? sectorTitle + "- SEKTOR" : "Bobur Arena" }}
+      </div>
+      <div class="ticket-cost" v-if="sectorTitle">
+        <div class="ticket-cost__title">CHIPTALAR NARXI:</div>
+        <div class="ticket-cost__count">50 000 SO'M</div>
+      </div>
       <div
         style="width: 90vw; margin: 0 auto"
         v-html="svgContent"
         @click="handleSVGClick"
       ></div>
-      <div class="main-content__sector">
+      <div v-if="sectorTitle" class="main-content__sector">
+        <div class="sector-wrap">
+          <div class="sector-square square-3"></div>
+          <div class="sector-title">Bo'sh joylar</div>
+        </div>
+        <div class="sector-wrap">
+          <div class="sector-square square-4"></div>
+          <div class="sector-title">Band joylar</div>
+        </div>
+      </div>
+      <div class="main-content__sector" v-else>
         <div class="sector-wrap">
           <div class="sector-square square-1"></div>
           <div class="sector-title">VIP sektor</div>
