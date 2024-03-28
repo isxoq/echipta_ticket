@@ -82,27 +82,33 @@ function loadSVG(svgData) {
 async function handleSVGClick(event) {
   // Handle SVG click events
 
-  let eventID = event.target.id;
+
+
+  let target = event.target
+  while (target !== null) {
+    if (target.id && target.id.includes('sector')) {
+      console.log(target)
+      break;
+    }
+    target = target.parentNode;
+  }
+  let eventID = target.id;
 
   if (eventID.includes("sector-")) {
     let sectorID = eventID.replace("sector-", "");
     sectorTitle.value = sectorID;
-    if (sectorID === "1a" || sectorID === "1b" || sectorID === "vip") {
-      console.log(sectorID);
-    } else {
-      console.log(sectorID);
+    console.log(sectorID);
 
-      isLoading.value = true;
+    isLoading.value = true;
 
-      try {
-        const { default: sectorData } = await import(
+    try {
+      const { default: sectorData } = await import(
           `@/assets/images/sectors/sector-${sectorID}.svg`
-        );
-        loadSVG(sectorData);
-      } catch (error) {
-        isLoading.value = false;
-        console.error("Error loading SVG:", error);
-      }
+          );
+      loadSVG(sectorData);
+    } catch (error) {
+      isLoading.value = false;
+      console.error("Error loading SVG:", error);
     }
   } else {
     // Extract the id attribute value of the clicked element
