@@ -14,14 +14,10 @@
 
         {{ sectorTitle ? sectorTitle + "- SEKTOR" : "Bobur Arena" }}
       </div>
-      <div class="ticket-cost" v-if="sectorTitle">
-        <div class="ticket-cost__title">CHIPTALAR NARXI:</div>
-        <div class="ticket-cost__count">50 000 SO'M</div>
-      </div>
       <div
-        style="width: 90vw; margin: 0 auto"
-        v-html="svgContent"
-        @click="handleSVGClick"
+          style="width: 100vw; margin: 0 auto"
+          v-html="svgContent"
+          @click="handleSVGClick"
       ></div>
       <div v-if="sectorTitle" class="main-content__sector">
         <div class="sector-wrap">
@@ -56,37 +52,48 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import stadiumSvgHtml from "@/assets/images/stadium.svg";
+import {ref, onMounted} from "vue";
+import stadiumSvgHtml from "@/assets/images/sectors/stadium.svg";
+
+let selectedSector = ""
+let selectedRow = ""
+let selectedSeat = ""
 
 const sectorTitle = ref(null);
 const svgContent = ref(null);
 const isLoading = ref(false);
+const telegram = window.Telegram.WebApp
+const telegramMainButton = window.Telegram.WebApp.MainButton
+const selectedMatchId = new URLSearchParams(window.location.search).get('match_id')
+
+telegramMainButton.onClick(function () {
+  telegram.sendData(selectedMatchId + "-" + selectedSector + "-" + selectedRow + "-" + selectedSeat)
+})
+
+telegram.expand()
 
 function loadSVG(svgData) {
   isLoading.value = true;
   fetch(svgData)
-    .then((response) => response.text())
-    .then((svgText) => {
-      svgContent.value = svgText;
-      // console.log(svgText)
-    })
-    .catch((error) => {
-      console.error("Error loading SVG:", error);
-    })
-    .finally(function () {
-      isLoading.value = false;
-    });
+      .then((response) => response.text())
+      .then((svgText) => {
+        svgContent.value = svgText;
+        // console.log(svgText)
+      })
+      .catch((error) => {
+        console.error("Error loading SVG:", error);
+      })
+      .finally(function () {
+        isLoading.value = false;
+      });
 }
 
 async function handleSVGClick(event) {
   // Handle SVG click events
 
-
-
   let target = event.target
   while (target !== null) {
-    if (target.id && target.id.includes('sector')) {
+    if (target.id && (target.id.includes('sector') || target.id.includes('seat'))) {
       console.log(target)
       break;
     }
@@ -97,31 +104,76 @@ async function handleSVGClick(event) {
   if (eventID.includes("sector-")) {
     let sectorID = eventID.replace("sector-", "");
     sectorTitle.value = sectorID;
+    selectedSector = sectorID
     console.log(sectorID);
 
     isLoading.value = true;
 
     try {
-      const { default: sectorData } = await import(
+      const {default: sectorData} = await import(
           `@/assets/images/sectors/sector-${sectorID}.svg`
           );
       loadSVG(sectorData);
+
+      fetch("https://dev.echipta.uz/check/seats-states?match_id="+selectedMatchId+"&sector="+selectedSector)
+          .then(response => response.json()) // Parse the JSON response
+          .then(data => {
+            console.log(data)
+
+            data.forEach(function (seatData) {
+              let idSeat = "seat-"+seatData.row+"-"+seatData.seat
+              // console.log(idSeat)
+
+              let parentElement = document.getElementById(idSeat)
+
+              if (parentElement){
+
+                var pathElements = parentElement.querySelectorAll("path");
+
+                // Loop through all selected path elements
+                pathElements.forEach(function(path) {
+                  // Do something with each path element, for example, set its fill color
+                  path.style.fill = "red"; // Change "red" to the desired fill color
+                });
+
+              }
+
+
+            })
+            // Assuming data contains the required information
+            // Change the background color of the element with id "seat-row-seat_number"
+          })
+          .catch(error => console.error('Error fetching data:', error));
+
+
     } catch (error) {
       isLoading.value = false;
       console.error("Error loading SVG:", error);
     }
   } else {
     // Extract the id attribute value of the clicked element
-    let seatID = event.target.closest("g").getAttribute("id");
+    let seatID = target.getAttribute("id");
     // Do something with the id value
     if (seatID && seatID.includes("seat")) {
-      alert("Tanlangam: " + seatID);
+
+
+      const parts = seatID.split('-');
+
+      alert("Siz tanladingiz: " + sectorTitle.value + " sektor, " + parts[1] + " qator, " + parts[2] + " joy. " + "Sotib olish uchun pastdagi sotib olish tugmasini bosing)");
+
+
+      selectedRow = parts[1]
+      selectedSeat = parts[2]
+
+      telegramMainButton.isVisible = true
+      telegramMainButton.text = "Sotib olish: " + sectorTitle.value + " sektor, " + parts[1] + " qator, " + parts[2] + " joy. "
     }
   }
 }
 
 function back() {
   sectorTitle.value = null;
+  telegramMainButton.isVisible = false
   loadSVG(stadiumSvgHtml);
 }
 
