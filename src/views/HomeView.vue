@@ -88,6 +88,52 @@ function loadSVG(svgData) {
       });
 }
 
+function loadSVGSector(svgData) {
+  isLoading.value = true;
+  fetch(svgData)
+      .then((response) => response.text())
+      .then((svgText) => {
+        svgContent.value = svgText;
+
+        fetch("https://echipta.uz/check/seats-states?match_id="+selectedMatchId+"&sector="+selectedSector)
+            .then(response => response.json()) // Parse the JSON response
+            .then(data => {
+              console.log(data)
+
+              data.forEach(function (seatData) {
+                let idSeat = "seat-"+seatData.row+"-"+seatData.seat
+                // console.log(idSeat)
+
+                let parentElement = document.getElementById(idSeat)
+
+                if (parentElement){
+
+                  var pathElements = parentElement.querySelectorAll("path");
+
+                  // Loop through all selected path elements
+                  pathElements.forEach(function(path) {
+                    // Do something with each path element, for example, set its fill color
+                    path.style.fill = "red"; // Change "red" to the desired fill color
+                  });
+
+                }
+
+
+              })
+              // Assuming data contains the required information
+              // Change the background color of the element with id "seat-row-seat_number"
+            })
+            .catch(error => console.error('Error fetching data:', error));
+        // console.log(svgText)
+      })
+      .catch((error) => {
+        console.error("Error loading SVG:", error);
+      })
+      .finally(function () {
+        isLoading.value = false;
+      });
+}
+
 async function handleSVGClick(event) {
   // Handle SVG click events
 
@@ -113,37 +159,9 @@ async function handleSVGClick(event) {
       const {default: sectorData} = await import(
           `@/assets/images/sectors/sector-${sectorID}.svg`
           );
-      loadSVG(sectorData);
-
-      fetch("https://dev.echipta.uz/check/seats-states?match_id="+selectedMatchId+"&sector="+selectedSector)
-          .then(response => response.json()) // Parse the JSON response
-          .then(data => {
-            console.log(data)
-
-            data.forEach(function (seatData) {
-              let idSeat = "seat-"+seatData.row+"-"+seatData.seat
-              // console.log(idSeat)
-
-              let parentElement = document.getElementById(idSeat)
-
-              if (parentElement){
-
-                var pathElements = parentElement.querySelectorAll("path");
-
-                // Loop through all selected path elements
-                pathElements.forEach(function(path) {
-                  // Do something with each path element, for example, set its fill color
-                  path.style.fill = "red"; // Change "red" to the desired fill color
-                });
-
-              }
+      loadSVGSector(sectorData);
 
 
-            })
-            // Assuming data contains the required information
-            // Change the background color of the element with id "seat-row-seat_number"
-          })
-          .catch(error => console.error('Error fetching data:', error));
 
 
     } catch (error) {
