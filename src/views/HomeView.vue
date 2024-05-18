@@ -195,6 +195,11 @@ async function handleSVGClick(event) {
       return 1;
     }
 
+    if (sectorID == "22" || sectorID == "24") {
+      alert("Bu joylar administrator tomonidan o'chirilgan!")
+      return 1;
+    }
+
     isLoading.value = true;
 
     try {
