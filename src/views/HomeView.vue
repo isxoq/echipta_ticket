@@ -7,46 +7,52 @@
 
     <!-- Your content goes here -->
     <div class="main-content">
-      <div class="main-content__title">
+      <div class="main-content__title" v-show="!isPanoramaOpen">
         <button class="back-button" v-if="sectorTitle" @click="back">
           Orqaga
         </button>
 
         {{ sectorTitle ? sectorTitle + "- SEKTOR" : "Bobur Arena" }}
       </div>
+      <div id="iframe-container" v-show="isPanoramaOpen">
+        <div id="close-btn" @click="closeIFrame">Yopish</div>
+      </div>
       <div
+          v-show="!isPanoramaOpen"
           style="width: 100vw; margin: 0 auto"
           v-html="svgContent"
           @click="handleSVGClick"
       ></div>
-      <div v-if="sectorTitle" class="main-content__sector">
-        <div class="sector-wrap">
-          <div class="sector-square square-3"></div>
-          <div class="sector-title">Bo'sh joylar</div>
+      <template v-show="!isPanoramaOpen">
+        <div v-if="sectorTitle" class="main-content__sector">
+          <div class="sector-wrap">
+            <div class="sector-square square-3"></div>
+            <div class="sector-title">Bo'sh joylar</div>
+          </div>
+          <div class="sector-wrap">
+            <div class="sector-square square-4"></div>
+            <div class="sector-title">Band joylar</div>
+          </div>
         </div>
-        <div class="sector-wrap">
-          <div class="sector-square square-4"></div>
-          <div class="sector-title">Band joylar</div>
+        <div class="main-content__sector" v-else>
+          <div class="sector-wrap">
+            <div class="sector-square square-1"></div>
+            <div class="sector-title">VIP sektor</div>
+          </div>
+          <div class="sector-wrap">
+            <div class="sector-square square-2"></div>
+            <div class="sector-title">CIP sektor</div>
+          </div>
+          <div class="sector-wrap">
+            <div class="sector-square square-3"></div>
+            <div class="sector-title">1-toifa</div>
+          </div>
+          <div class="sector-wrap">
+            <div class="sector-square square-4"></div>
+            <div class="sector-title">Raqib fan</div>
+          </div>
         </div>
-      </div>
-      <div class="main-content__sector" v-else>
-        <div class="sector-wrap">
-          <div class="sector-square square-1"></div>
-          <div class="sector-title">VIP sektor</div>
-        </div>
-        <div class="sector-wrap">
-          <div class="sector-square square-2"></div>
-          <div class="sector-title">CIP sektor</div>
-        </div>
-        <div class="sector-wrap">
-          <div class="sector-square square-3"></div>
-          <div class="sector-title">1-toifa</div>
-        </div>
-        <div class="sector-wrap">
-          <div class="sector-square square-4"></div>
-          <div class="sector-title">Raqib fan</div>
-        </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -58,6 +64,7 @@ import stadiumSvgHtml from "@/assets/images/sectors/stadium.svg";
 let selectedSector = ""
 let selectedRow = ""
 let selectedSeat = ""
+let isPanoramaOpen = ref(false)
 
 const sectorTitle = ref(null);
 const svgContent = ref(null);
@@ -71,6 +78,36 @@ telegramMainButton.onClick(function () {
 })
 
 telegram.expand()
+
+
+// Function to close the iframe when the close button is clicked
+function closeIFrame() {
+  isPanoramaOpen.value = false
+}
+
+// Function to load the iframe when the button is clicked
+function loadIFrame(url) {
+  let tempIframeDiv = document.getElementById("temp-iframe");
+  if (tempIframeDiv !==null) {
+    tempIframeDiv.remove()
+  }
+  isPanoramaOpen.value = true
+  // Get the iframe container element
+  let iframeContainer = document.getElementById("iframe-container");
+
+  // Create an iframe element
+  let iframe = document.createElement("iframe");
+
+  // Set attributes for the iframe
+  iframe.src = url; // Set the URL you want to load
+  iframe.width = "100%";
+  iframe.id = "temp-iframe"
+  iframe.height = "100%";
+  iframe.frameBorder = "0"; // Remove iframe border
+
+  iframeContainer.appendChild(iframe);
+}
+
 
 function loadSVG(svgData) {
   isLoading.value = true;
@@ -95,23 +132,23 @@ function loadSVGSector(svgData) {
       .then((svgText) => {
         svgContent.value = svgText;
 
-        fetch("https://echipta.uz/check/seats-states?match_id="+selectedMatchId+"&sector="+selectedSector)
+        fetch("https://echipta.uz/check/seats-states?match_id=" + selectedMatchId + "&sector=" + selectedSector)
             .then(response => response.json()) // Parse the JSON response
             .then(data => {
               console.log(data)
 
               data.forEach(function (seatData) {
-                let idSeat = "seat-"+seatData.row+"-"+seatData.seat
+                let idSeat = "seat-" + seatData.row + "-" + seatData.seat
                 // console.log(idSeat)
 
                 let parentElement = document.getElementById(idSeat)
 
-                if (parentElement){
+                if (parentElement) {
 
                   var pathElements = parentElement.querySelectorAll("path");
 
                   // Loop through all selected path elements
-                  pathElements.forEach(function(path) {
+                  pathElements.forEach(function (path) {
                     // Do something with each path element, for example, set its fill color
                     path.style.fill = "red"; // Change "red" to the desired fill color
                   });
@@ -153,6 +190,11 @@ async function handleSVGClick(event) {
     selectedSector = sectorID
     console.log(sectorID);
 
+    if (sectorID == "18") {
+      alert("Bu sektor faqat FAN CLUB muhlislari uchun!")
+      return 1;
+    }
+
     isLoading.value = true;
 
     try {
@@ -160,8 +202,6 @@ async function handleSVGClick(event) {
           `@/assets/images/sectors/sector-${sectorID}.svg`
           );
       loadSVGSector(sectorData);
-
-
 
 
     } catch (error) {
@@ -183,6 +223,8 @@ async function handleSVGClick(event) {
       selectedRow = parts[1]
       selectedSeat = parts[2]
 
+      loadIFrame("https://cdn.pannellum.org/2.5/pannellum.htm#panorama=https://api.echipta.uz/360/"+sectorTitle.value+"/"+selectedRow+"/"+selectedSeat+".jpg&title="+sectorTitle.value+"-"+selectedRow+"-"+selectedSeat+"&author=Joydan vizual ko'rinish&autoLoad=true")
+
       telegramMainButton.isVisible = true
       telegramMainButton.text = "Sotib olish: " + sectorTitle.value + " sektor, " + parts[1] + " qator, " + parts[2] + " joy. "
     }
@@ -197,5 +239,6 @@ function back() {
 
 onMounted(() => {
   loadSVG(stadiumSvgHtml);
+
 });
 </script>
