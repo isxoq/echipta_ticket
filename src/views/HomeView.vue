@@ -88,7 +88,7 @@ function closeIFrame() {
 // Function to load the iframe when the button is clicked
 function loadIFrame(url) {
   let tempIframeDiv = document.getElementById("temp-iframe");
-  if (tempIframeDiv !==null) {
+  if (tempIframeDiv !== null) {
     tempIframeDiv.remove()
   }
   isPanoramaOpen.value = true
@@ -190,12 +190,12 @@ async function handleSVGClick(event) {
     selectedSector = sectorID
     console.log(sectorID);
 
-    if (sectorID == "18") {
+    if (sectorID == "18" || sectorID == "19") {
       alert("Bu sektor faqat FAN CLUB muhlislari uchun!")
       return 1;
     }
 
-    if (sectorID == "22" || sectorID == "24") {
+    if (sectorID == "21" || sectorID == "22" || sectorID == "23" || sectorID == "24" || sectorID == "25" || sectorID == "26" || sectorID == "27") {
       alert("Bu joylar administrator tomonidan o'chirilgan!")
       return 1;
     }
@@ -221,14 +221,16 @@ async function handleSVGClick(event) {
 
 
       const parts = seatID.split('-');
-
+      selectedRow = parts[1]
+      selectedSeat = parts[2]
+      if (selectedSector == "vip" && (selectedRow == "8" || selectedRow =="9")) {
+        alert("Bu joylarni sotib olish mumkin emas!")
+        return 1;
+      }
       alert("Siz tanladingiz: " + sectorTitle.value + " sektor, " + parts[1] + " qator, " + parts[2] + " joy. " + "Sotib olish uchun pastdagi sotib olish tugmasini bosing)");
 
 
-      selectedRow = parts[1]
-      selectedSeat = parts[2]
-
-      loadIFrame("https://cdn.pannellum.org/2.5/pannellum.htm#panorama=https://api.echipta.uz/360/"+sectorTitle.value+"/"+selectedRow+"/"+selectedSeat+".jpg&title="+sectorTitle.value+"-"+selectedRow+"-"+selectedSeat+"&author=Joydan vizual ko'rinish&autoLoad=true")
+      loadIFrame("https://cdn.pannellum.org/2.5/pannellum.htm#panorama=https://api.echipta.uz/360/" + sectorTitle.value.toUpperCase() + "/" + selectedRow + "/" + selectedSeat + ".jpg&title=" + sectorTitle.value.toUpperCase() + "-" + selectedRow + "-" + selectedSeat + "&author=Joydan vizual ko'rinish&autoLoad=true")
 
       telegramMainButton.isVisible = true
       telegramMainButton.text = "Sotib olish: " + sectorTitle.value + " sektor, " + parts[1] + " qator, " + parts[2] + " joy. "
