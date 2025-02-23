@@ -12,7 +12,7 @@
           Orqaga
         </button>
 
-        {{ sectorTitle ? sectorTitle + "- SEKTOR" : "Bobur Arena" }}
+        {{ "BOBUR ARENA STADIONI" }}
       </div>
       <div id="iframe-container" v-show="isPanoramaOpen">
         <div id="close-btn" @click="closeIFrame">Yopish</div>
