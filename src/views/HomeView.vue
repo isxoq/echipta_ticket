@@ -190,13 +190,18 @@ async function handleSVGClick(event) {
     selectedSector = sectorID
     console.log(sectorID);
 
-    if (sectorID == "18" || sectorID == "19") {
+    if (sectorID == "18") {
       alert("Bu sektor faqat FAN CLUB muhlislari uchun!")
       return 1;
     }
 
-    if (sectorID == "21" || sectorID == "22" || sectorID == "23" || sectorID == "24" || sectorID == "25" || sectorID == "26" || sectorID == "27") {
+    if (sectorID == "21" || sectorID == "23") {
       alert("Bu joylar administrator tomonidan o'chirilgan!")
+      return 1;
+    }
+
+    if (sectorID == "22") {
+      alert("Bu joylar mehmonlar uchun!")
       return 1;
     }
 
