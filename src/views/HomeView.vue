@@ -236,10 +236,10 @@ async function handleSVGClick(event) {
       const sector = selectedSector.toLowerCase();
       const row = parseInt(selectedRow);
 
-      if ((sector === '1' || sector === '1a') && row >= 1 && row <= 10) {
-        alert("Ushbu joylarni sotib bo'lmaydi!")
-        return
-      }
+      // if ((sector === '1' || sector === '1a') && row >= 1 && row <= 10) {
+      //   alert("Ushbu joylarni sotib bo'lmaydi!")
+      //   return
+      // }
 
 
       alert("Siz tanladingiz: " + sectorTitle.value + " sektor, " + parts[1] + " qator, " + parts[2] + " joy. " + "Sotib olish uchun pastdagi sotib olish tugmasini bosing)");
