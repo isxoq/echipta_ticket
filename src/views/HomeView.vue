@@ -195,7 +195,7 @@ async function handleSVGClick(event) {
       return 1;
     }
 
-    if (sectorID == "21" || sectorID == "23" || sectorID == "32") {
+    if (sectorID == "21" || sectorID == "23") {
       alert("Bu joylar administrator tomonidan o'chirilgan!")
       return 1;
     }
