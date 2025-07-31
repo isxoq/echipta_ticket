@@ -195,7 +195,7 @@ async function handleSVGClick(event) {
       return 1;
     }
 
-    if (sectorID == "21" || sectorID == "23") {
+    if (sectorID == "1" || sectorID == "1a" || sectorID == "vip" || sectorID == "21" || sectorID == "23") {
       alert("Bu joylar administrator tomonidan o'chirilgan!")
       return 1;
     }
@@ -228,7 +228,7 @@ async function handleSVGClick(event) {
       const parts = seatID.split('-');
       selectedRow = parts[1]
       selectedSeat = parts[2]
-      if (selectedSector == "vip" && (selectedRow == "8" || selectedRow =="9")) {
+      if (selectedSector == "vip" && (selectedRow == "8" || selectedRow == "9")) {
         alert("Bu joylarni sotib olish mumkin emas!")
         return 1;
       }
