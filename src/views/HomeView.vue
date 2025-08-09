@@ -205,6 +205,15 @@ async function handleSVGClick(event) {
       return 1;
     }
 
+    const blockedSectors = [24,25,26,27,28];
+
+    const normalizedSectorID = sectorID.toLowerCase();
+
+    if (blockedSectors.includes(normalizedSectorID)) {
+      alert("Bu joylarni sotish administrator tomonidan o'chirilgan!");
+      return 1;
+    }
+
     isLoading.value = true;
 
     try {
