@@ -205,7 +205,7 @@ async function handleSVGClick(event) {
       return 1;
     }
 
-    const blockedSectors = ['24','25','26','27'];
+    const blockedSectors = ['24','25','26'];
 
     const normalizedSectorID = sectorID.toLowerCase();
 
