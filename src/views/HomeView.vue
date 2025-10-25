@@ -114,8 +114,25 @@ function loadSVG(svgData) {
   fetch(svgData)
       .then((response) => response.text())
       .then((svgText) => {
-        svgContent.value = svgText;
+        // svgContent.value = svgText;
         // console.log(svgText)
+
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+        const svgEl = svgDoc.querySelector('svg');
+
+        if (svgEl) {
+          // SVG o‘lchamlarini moslashtirish
+          svgEl.removeAttribute('width');
+          svgEl.removeAttribute('height');
+          svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+          svgEl.style.width = '100%';
+          svgEl.style.height = 'auto';
+        }
+
+        // SVG’ni string holatiga qaytarib yozamiz
+        svgContent.value = new XMLSerializer().serializeToString(svgEl);
+
       })
       .catch((error) => {
         console.error("Error loading SVG:", error);
@@ -131,6 +148,7 @@ function loadSVGSector(svgData) {
       .then((response) => response.text())
       .then((svgText) => {
         svgContent.value = svgText;
+
 
         fetch("https://echipta.uz/check/seats-states?match_id=" + selectedMatchId + "&sector=" + selectedSector+"&platform=open_to_telegram")
             .then(response => response.json()) // Parse the JSON response
