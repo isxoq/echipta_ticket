@@ -132,7 +132,7 @@ function loadSVGSector(svgData) {
       .then((svgText) => {
         svgContent.value = svgText;
 
-        fetch("https://echipta.uz/check/seats-states?match_id=" + selectedMatchId + "&sector=" + selectedSector)
+        fetch("https://echipta.uz/check/seats-states?match_id=" + selectedMatchId + "&sector=" + selectedSector+"&platform=open_to_telegram")
             .then(response => response.json()) // Parse the JSON response
             .then(data => {
               console.log(data)
@@ -197,7 +197,7 @@ async function handleSVGClick(event) {
 
 
     // const blockedSectors = ['1', '1a', 'vip', '21', '22', '23', '24', '25', '26', '27', '7', '8', '9', '10', '11', '12', '13'];
-    const blockedSectors = ['21','22','23','24','25','26','27','28','29','6','7','8','9','10','11','12','13'];
+    const blockedSectors = [];
 
     const normalizedSectorID = sectorID.toLowerCase();
 
