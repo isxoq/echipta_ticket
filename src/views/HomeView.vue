@@ -150,7 +150,7 @@ function loadSVGSector(svgData) {
         svgContent.value = svgText;
 
 
-        fetch("https://echipta.uz/check/seats-states?match_id=" + selectedMatchId + "&sector=" + selectedSector+"&platform=open_to_telegram")
+        fetch("https://app.echipta.uz/check/seats-states?match_id=" + selectedMatchId + "&sector=" + selectedSector+"&platform=open_to_telegram")
             .then(response => response.json()) // Parse the JSON response
             .then(data => {
               console.log(data)
